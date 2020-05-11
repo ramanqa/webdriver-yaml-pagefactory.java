@@ -12,9 +12,9 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Reporter;
-import com.jcabi.aspects.Loggable;
+//import com.jcabi.aspects.Loggable;
 
-@Loggable
+//@Loggable
 public class YamlWebElement {
 
     private String name;

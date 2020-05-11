@@ -49,16 +49,24 @@
       <version>1.2.3</version>
       <scope>runtime</scope>
     </dependency>
-    <dependency>
+<!--
+<dependency>
        <groupId>com.jcabi</groupId>
        <artifactId>jcabi-aspects</artifactId>
        <version>0.22.4</version>
+    </dependency>
+-->
+<dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.6</version>
     </dependency>
   </dependencies>
 
   <build>
     <plugins>
       <!-- AOP for implicit method logging annotation @Loggable -->
+<!--
       <plugin>
           <groupId>com.jcabi</groupId>
           <artifactId>jcabi-maven-plugin</artifactId>
@@ -87,6 +95,7 @@
              </dependency>
           </dependencies>
       </plugin>
+-->
     </plugins>
   </build>
 </project>
