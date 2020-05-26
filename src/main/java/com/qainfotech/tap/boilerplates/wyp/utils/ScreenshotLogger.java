@@ -5,6 +5,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.TakesScreenshot;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.io.File;
 import org.openqa.selenium.OutputType;
 import org.apache.commons.io.FileUtils;
@@ -23,7 +24,7 @@ public class ScreenshotLogger {
         try{
             File screenshotFile = ((TakesScreenshot) this.driver).getScreenshotAs(OutputType.FILE);
             String fileName = "" + System.currentTimeMillis() + ".png";
-            if(!Files.exists(Path.of(path))){
+            if(!Files.exists(Paths.get(path))){
                 new File(this.path).mkdirs(); 
             }
 
