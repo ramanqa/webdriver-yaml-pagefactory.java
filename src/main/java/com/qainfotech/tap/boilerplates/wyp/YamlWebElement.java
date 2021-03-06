@@ -14,7 +14,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Reporter;
 import com.jcabi.aspects.Loggable;
 
-@Loggable
+@Loggable(Loggable.DEBUG)
 public class YamlWebElement {
 
     private String name;
