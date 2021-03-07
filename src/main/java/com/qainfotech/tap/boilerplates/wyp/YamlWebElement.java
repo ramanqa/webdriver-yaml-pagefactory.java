@@ -17,14 +17,15 @@ import com.jcabi.aspects.Loggable;
 @Loggable(Loggable.DEBUG)
 public class YamlWebElement {
 
-    private String name;
-    private WebDriver driver;
-    private WebDriverWait wait;
-    private Map<String, Object> specs;
-    private WebElement element = null;
-    private By by = null;
-    private long startTime;
-    private String pageObjectName;
+    protected String name;
+    protected WebDriver driver;
+    protected WebDriverWait wait;
+    protected Map<String, Object> specs;
+    protected WebElement element = null;
+    protected By by = null;
+    protected long startTime;
+    protected String pageObjectName;
+    protected YamlWebElement container = null;
 
     public YamlWebElement(WebDriver driver, String pageObjectName, String name, Map<String, Object> specs){
         this.specs = specs;
@@ -37,6 +38,18 @@ public class YamlWebElement {
         }
     }
 
+    public YamlWebElement(YamlWebElement container, String name, Map<String, Object> specs){
+        this.specs = specs;
+        this.container = container;
+        this.name = name;
+        this.driver = container.driver;
+        this.pageObjectName = container.pageObjectName;
+        this.wait = new WebDriverWait(this.driver, 1);
+        if(specs.containsKey("timeout")){
+            this.wait = new WebDriverWait(this.driver, Integer.parseInt(specs.get("timeout").toString()));
+        }
+    }
+    
     public YamlWebElement(WebDriver driver, String pageObjectName, String name, WebElement element){
         this.element = element;
         this.name = name;
@@ -53,7 +66,7 @@ public class YamlWebElement {
         this.wait = new WebDriverWait(this.driver, timeout);
     }
 
-    private By locatedBy(){
+    protected By locatedBy(){
         if(this.by == null){
             String findBy = specs.get("findBy").toString();
             String locator = specs.get("locator").toString();
@@ -90,29 +103,14 @@ public class YamlWebElement {
      */
     public WebElement webElement(){
         if(this.element == null){
+            if(this.container != null){
+                this.wait.until(ExpectedConditions.presenceOfNestedElementLocatedBy(this.container.webElement(), locatedBy()));
+                return this.container.webElement().findElement(locatedBy());
+            }
             this.wait.until(ExpectedConditions.presenceOfElementLocated(locatedBy()));
             return this.driver.findElement(locatedBy());
         }
         return this.element;
-    }
-
-    private void reportMethodEntry(){
-        this.startTime = System.currentTimeMillis();
-    }
-
-    private void reportMethodExit(String params){
-        long executionTime = System.currentTimeMillis() - this.startTime;
-        String methodName = new Exception().getStackTrace()[2].getMethodName();
-        Reporter.log("Executed " + this.pageObjectName + "." + this.name + "#" + methodName + "(" + params + ") in " + executionTime + "ms" , true);
-    }
-    private void reportMethodExit(String params, String response){
-        long executionTime = System.currentTimeMillis() - this.startTime;
-        String methodName = new Exception().getStackTrace()[2].getMethodName();
-        Reporter.log("Executed " + this.pageObjectName + "." + this.name + "#" + methodName + "(" + params + "), returns "+response+" in " + executionTime + "ms" , true);
-    }
-
-    private void reportMethodExit(){
-        this.reportMethodExit("");
     }
 
     public void click(){

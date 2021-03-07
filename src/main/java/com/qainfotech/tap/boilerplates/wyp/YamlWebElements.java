@@ -23,13 +23,27 @@ public class YamlWebElements {
     private long startTime;
     private String pageObjectName;
     private List<YamlWebElement> elements;
-
+    private YamlWebElement container = null;
 
     public YamlWebElements(WebDriver driver, String pageObjectName, String name, Map<String, Object> specs){
         this.specs = specs;
         this.name = name;
         this.driver = driver;
         this.pageObjectName = pageObjectName;
+        this.wait = new WebDriverWait(this.driver, 1);
+        if(specs.containsKey("timeout")){
+            this.wait = new WebDriverWait(driver, Integer.parseInt(specs.get("timeout").toString()));
+        }
+
+        this.initElements();
+    }
+
+    public YamlWebElements(YamlWebElement container, String name, Map<String, Object> specs){
+        this.specs = specs;
+        this.name = name;
+        this.container = container;
+        this.driver = container.driver;
+        this.pageObjectName = container.pageObjectName;
         this.wait = new WebDriverWait(this.driver, 1);
         if(specs.containsKey("timeout")){
             this.wait = new WebDriverWait(driver, Integer.parseInt(specs.get("timeout").toString()));
@@ -67,8 +81,14 @@ public class YamlWebElements {
 
     private void initElements(){
         this.elements = new ArrayList<>();
-        this.wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(locatedBy()));
-        List<WebElement> elementList =  this.driver.findElements(locatedBy());
+        List<WebElement> elementList;
+        if(this.container == null){
+            this.wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(locatedBy()));
+            elementList =  this.driver.findElements(locatedBy());
+        }else{
+            this.wait.until(ExpectedConditions.presenceOfNestedElementsLocatedBy(this.container.locatedBy(), locatedBy()));
+            elementList =  this.container.webElement().findElements(locatedBy());
+        }
         for(int elementIndex=0; elementIndex < elementList.size(); elementIndex++){
             this.elements.add(new YamlWebElement(this.driver, this.pageObjectName, this.name+"["+elementIndex+"]", elementList.get(elementIndex)));
         }

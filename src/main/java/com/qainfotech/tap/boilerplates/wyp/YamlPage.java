@@ -21,13 +21,27 @@ public class YamlPage {
         return (Map<String, Object>)((Map<String, Object>) pageUI.get("elements")).get(elementName);
     }
 
+    private Boolean hasContainer() {
+        return ((Map<String, Object>) pageUI.get("elements")).containsKey("container");
+    }
+
     public YamlWebElement element(String elementName){
         String pageObjectName = this.getClass().getCanonicalName();
+        if(this.hasContainer()){
+            System.out.println("################# hhhh");
+            return (new ContainerYamlWebElement(driver, pageObjectName, elementUI("container")))
+              .childElement(elementName, elementUI(elementName));
+        }
+
         return new YamlWebElement(driver, pageObjectName, elementName, elementUI(elementName));
     }
 
     public List<YamlWebElement> elements(String elementName){
         String pageObjectName = this.getClass().getCanonicalName();
+        if(this.hasContainer()){
+            return (new ContainerYamlWebElement(driver, pageObjectName, elementUI("container")))
+              .childElements(elementName, elementUI(elementName)).elements();
+        }
         return new YamlWebElements(driver, pageObjectName, elementName, elementUI(elementName)).elements();
     }
 }
