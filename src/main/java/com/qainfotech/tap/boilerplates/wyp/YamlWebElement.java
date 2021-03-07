@@ -23,47 +23,61 @@ public class YamlWebElement {
     protected Map<String, Object> specs;
     protected WebElement element = null;
     protected By by = null;
-    protected long startTime;
     protected String pageObjectName;
     protected YamlWebElement container = null;
+    protected TestSession testSession;
+    protected Map<String, Object> config;
 
-    public YamlWebElement(WebDriver driver, String pageObjectName, String name, Map<String, Object> specs){
+    public YamlWebElement(TestSession session, String pageObjectName, String name, Map<String, Object> specs){
         this.specs = specs;
         this.name = name;
-        this.driver = driver;
+        this.testSession = session;
+        this.config = session.config();
+        this.driver = session.driver();
         this.pageObjectName = pageObjectName;
-        this.wait = new WebDriverWait(this.driver, 1);
-        if(specs.containsKey("timeout")){
-            this.wait = new WebDriverWait(driver, Integer.parseInt(specs.get("timeout").toString()));
-        }
+        this.setWait();
     }
 
     public YamlWebElement(YamlWebElement container, String name, Map<String, Object> specs){
         this.specs = specs;
         this.container = container;
+        this.testSession = container.testSession;
         this.name = name;
         this.driver = container.driver;
+        this.config = container.config;
         this.pageObjectName = container.pageObjectName;
-        this.wait = new WebDriverWait(this.driver, 1);
-        if(specs.containsKey("timeout")){
-            this.wait = new WebDriverWait(this.driver, Integer.parseInt(specs.get("timeout").toString()));
-        }
+        this.setWait();
     }
     
-    public YamlWebElement(WebDriver driver, String pageObjectName, String name, WebElement element){
+    public YamlWebElement(TestSession session, String pageObjectName, String name, WebElement element){
         this.element = element;
         this.name = name;
-        this.driver = driver;
+        this.testSession = session;
+        this.driver = session.driver();
+        this.config = session.config();
         this.pageObjectName = pageObjectName;
         this.wait = new WebDriverWait(this.driver, 1);
     }
     
-    public YamlWebElement(WebDriver driver, String pageObjectName, String name, By locator, Integer timeout){
+    public YamlWebElement(TestSession session, String pageObjectName, String name, By locator, Integer timeout){
         this.by = locator;
         this.name = name;
-        this.driver = driver;
+        this.testSession = session;
+        this.driver = session.driver();
+        this.config = session.config();
         this.pageObjectName = pageObjectName;
         this.wait = new WebDriverWait(this.driver, timeout);
+    }
+
+    protected WebDriverWait setWait(){
+        this.wait = new WebDriverWait(this.driver, 1);
+        if(this.config.containsKey("timeout")){
+            this.wait = new WebDriverWait(driver, Integer.parseInt(this.config.get("timeout").toString()));
+        }
+        if(this.specs.containsKey("timeout")){
+            this.wait = new WebDriverWait(driver, Integer.parseInt(this.specs.get("timeout").toString()));
+        }
+        return this.wait;
     }
 
     protected By locatedBy(){
@@ -185,7 +199,7 @@ public class YamlWebElement {
                 timeout = Integer.parseInt(this.specs.get("timeout").toString());
             }
         }
-        return new YamlWebElement(this.driver, this.pageObjectName, this.name+".child("+locator+")", locator, timeout);
+        return new YamlWebElement(this.testSession, this.pageObjectName, this.name+".child("+locator+")", locator, timeout);
     }
 
 }

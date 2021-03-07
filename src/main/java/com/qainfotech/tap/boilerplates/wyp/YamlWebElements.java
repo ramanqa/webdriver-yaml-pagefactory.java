@@ -20,21 +20,20 @@ public class YamlWebElements {
     private WebDriver driver;
     private WebDriverWait wait;
     private Map<String, Object> specs;
-    private long startTime;
     private String pageObjectName;
     private List<YamlWebElement> elements;
     private YamlWebElement container = null;
+    private TestSession testSession;
+    private Map<String, Object> config;
 
-    public YamlWebElements(WebDriver driver, String pageObjectName, String name, Map<String, Object> specs){
+    public YamlWebElements(TestSession session, String pageObjectName, String name, Map<String, Object> specs){
         this.specs = specs;
         this.name = name;
-        this.driver = driver;
+        this.testSession = session;
+        this.driver = session.driver();
+        this.config = session.config();
         this.pageObjectName = pageObjectName;
-        this.wait = new WebDriverWait(this.driver, 1);
-        if(specs.containsKey("timeout")){
-            this.wait = new WebDriverWait(driver, Integer.parseInt(specs.get("timeout").toString()));
-        }
-
+        this.setWait();
         this.initElements();
     }
 
@@ -42,17 +41,26 @@ public class YamlWebElements {
         this.specs = specs;
         this.name = name;
         this.container = container;
+        this.testSession = container.testSession;
         this.driver = container.driver;
+        this.config = container.config;
         this.pageObjectName = container.pageObjectName;
-        this.wait = new WebDriverWait(this.driver, 1);
-        if(specs.containsKey("timeout")){
-            this.wait = new WebDriverWait(driver, Integer.parseInt(specs.get("timeout").toString()));
-        }
-
+        this.setWait();
         this.initElements();
     }
 
-    private By locatedBy(){
+    protected WebDriverWait setWait(){
+        this.wait = new WebDriverWait(this.driver, 1);
+        if(this.config.containsKey("timeout")){
+            this.wait = new WebDriverWait(driver, Integer.parseInt(this.config.get("timeout").toString()));
+        }
+        if(this.specs.containsKey("timeout")){
+            this.wait = new WebDriverWait(driver, Integer.parseInt(this.specs.get("timeout").toString()));
+        }
+        return this.wait;
+    }
+
+    protected By locatedBy(){
         String findBy = specs.get("findBy").toString();
         String locator = specs.get("locator").toString();
         switch(findBy){
@@ -90,7 +98,7 @@ public class YamlWebElements {
             elementList =  this.container.webElement().findElements(locatedBy());
         }
         for(int elementIndex=0; elementIndex < elementList.size(); elementIndex++){
-            this.elements.add(new YamlWebElement(this.driver, this.pageObjectName, this.name+"["+elementIndex+"]", elementList.get(elementIndex)));
+            this.elements.add(new YamlWebElement(this.testSession, this.pageObjectName, this.name+"["+elementIndex+"]", elementList.get(elementIndex)));
         }
     }
 

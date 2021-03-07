@@ -7,16 +7,23 @@ import org.testng.Reporter;
 
 public class TestNGReporterAppender extends AppenderBase<ILoggingEvent> {
 
+    private Boolean recordDebugLogs(){
+        return Boolean.parseBoolean(System.getProperty("PO_DEBUG_LOGS"));
+    }
+
     @Override
     protected void append(final ILoggingEvent event) {
-        String logLine = "";
         if(event.getLevel().toString().equals("INFO")){
-            logLine += event.getLoggerName() + event.getMessage();
+            String logLine = event.getLoggerName() + event.getMessage();
+            System.out.println(logLine);
+            Reporter.log(logLine);
         }else{
-            logLine += "|---> " + event.getLoggerName() + event.getMessage();
+            if(recordDebugLogs()){
+                String logLine = "[DEBUG] " + event.getLoggerName() + event.getMessage();
+                System.out.println(logLine);
+                Reporter.log(logLine);
+            }
         }
-        System.out.println(logLine);
-        Reporter.log(logLine);
     }
 
 }

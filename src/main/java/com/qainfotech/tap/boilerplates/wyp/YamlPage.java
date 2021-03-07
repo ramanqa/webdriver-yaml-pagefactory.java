@@ -9,9 +9,13 @@ public class YamlPage {
 
     protected WebDriver driver;
     Map<String, Object> pageUI;
+    protected TestSession testSession;
+    protected Map<String, Object> config;
 
-    public YamlPage(WebDriver driver){
-        this.driver = driver;
+    public YamlPage(TestSession session){
+        this.testSession = session;
+        this.driver = session.driver();
+        this.config = session.config();
         String filePath = this.getClass().getCanonicalName().replaceAll("\\.", "/") + ".yaml";
         Yaml yaml = new Yaml();
         this.pageUI = yaml.load(this.getClass().getClassLoader().getResourceAsStream(filePath));
@@ -28,20 +32,19 @@ public class YamlPage {
     public YamlWebElement element(String elementName){
         String pageObjectName = this.getClass().getCanonicalName();
         if(this.hasContainer()){
-            System.out.println("################# hhhh");
-            return (new ContainerYamlWebElement(driver, pageObjectName, elementUI("container")))
+            return (new ContainerYamlWebElement(testSession, pageObjectName, elementUI("container")))
               .childElement(elementName, elementUI(elementName));
         }
 
-        return new YamlWebElement(driver, pageObjectName, elementName, elementUI(elementName));
+        return new YamlWebElement(this.testSession, pageObjectName, elementName, elementUI(elementName));
     }
 
     public List<YamlWebElement> elements(String elementName){
         String pageObjectName = this.getClass().getCanonicalName();
         if(this.hasContainer()){
-            return (new ContainerYamlWebElement(driver, pageObjectName, elementUI("container")))
+            return (new ContainerYamlWebElement(testSession, pageObjectName, elementUI("container")))
               .childElements(elementName, elementUI(elementName)).elements();
         }
-        return new YamlWebElements(driver, pageObjectName, elementName, elementUI(elementName)).elements();
+        return new YamlWebElements(this.testSession, pageObjectName, elementName, elementUI(elementName)).elements();
     }
 }
