@@ -18,7 +18,9 @@ public class YamlPage {
         this.config = session.config();
         String filePath = this.getClass().getCanonicalName().replaceAll("\\.", "/") + ".yaml";
         Yaml yaml = new Yaml();
-        this.pageUI = yaml.load(this.getClass().getClassLoader().getResourceAsStream(filePath));
+        try{
+            this.pageUI = yaml.load(this.getClass().getClassLoader().getResourceAsStream(filePath));
+        }catch(Exception e){}
     }
 
     private Map<String, Object> elementUI(String elementName){
