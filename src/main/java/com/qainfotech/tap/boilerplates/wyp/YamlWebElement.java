@@ -80,7 +80,7 @@ public class YamlWebElement {
         return this.wait;
     }
 
-    protected By locatedBy(){
+    public By locatedBy(){
         if(this.by == null){
             String findBy = specs.get("findBy").toString();
             String locator = specs.get("locator").toString();

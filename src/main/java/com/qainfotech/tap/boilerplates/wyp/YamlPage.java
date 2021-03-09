@@ -1,8 +1,10 @@
 package com.qainfotech.tap.boilerplates.wyp;
 
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.JavascriptExecutor;
 import java.util.Map;
 import java.util.List;
+import java.util.ArrayList;
 import org.yaml.snakeyaml.Yaml;
 
 public class YamlPage {
@@ -48,5 +50,31 @@ public class YamlPage {
               .childElements(elementName, elementUI(elementName)).elements();
         }
         return new YamlWebElements(this.testSession, pageObjectName, elementName, elementUI(elementName)).elements();
+    }
+
+    public Object executeJS(String jsactionName){
+        return ((JavascriptExecutor)this.driver)
+            .executeScript(((Map<String, Object>)pageUI.get("jsactions")).get(jsactionName).toString());
+    }
+
+    public void waitForPageLoad(){
+        for(YamlWebElement yamlWebElement:expectedElementList()){
+            yamlWebElement.isDisplayed();
+        }
+    }
+    
+    private List<YamlWebElement> expectedElementList() {
+        List<YamlWebElement> listOfWaitForElements = new ArrayList<>();
+        String pageObjectName = this.getClass().getCanonicalName();
+        Map<String, Object> elements = (Map<String, Object>)pageUI.get("elements");
+        for(String elementName: elements.keySet()){
+            if(((Map<String, Object>)elements.get(elementName)).containsKey("expected")){
+                if((Boolean)((Map<String, Object>)elements.get(elementName)).get("ex[ected")){
+                    YamlWebElement yamlWebElement = new YamlWebElement(this.testSession, pageObjectName, elementName, elementUI(elementName));
+                    listOfWaitForElements.add(yamlWebElement);
+                }
+            }
+        }
+        return listOfWaitForElements;
     }
 }
