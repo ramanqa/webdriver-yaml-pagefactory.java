@@ -8,7 +8,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.Reporter;
 import java.util.List;
 import java.util.ArrayList;
 import com.jcabi.aspects.Loggable;
@@ -49,6 +48,17 @@ public class YamlWebElements {
         this.initElements();
     }
 
+    public YamlWebElements(YamlWebElement container, String name, By locator, Integer timeout){
+        this.name = name;
+        this.container = container;
+        this.testSession = container.testSession;
+        this.driver = container.driver;
+        this.config = container.config;
+        this.pageObjectName = container.pageObjectName;
+        this.setWait(timeout);
+        this.initElements(locator);
+    }
+    
     protected WebDriverWait setWait(){
         this.wait = new WebDriverWait(this.driver, 1);
         if(this.config.containsKey("timeout")){
@@ -57,6 +67,11 @@ public class YamlWebElements {
         if(this.specs.containsKey("timeout")){
             this.wait = new WebDriverWait(driver, Integer.parseInt(this.specs.get("timeout").toString()));
         }
+        return this.wait;
+    }
+
+    protected WebDriverWait setWait(Integer timeout){
+        this.wait = new WebDriverWait(this.driver, timeout);
         return this.wait;
     }
 
@@ -102,6 +117,20 @@ public class YamlWebElements {
         }
     }
 
+    private void initElements(By locator){
+        this.elements = new ArrayList<>();
+        List<WebElement> elementList;
+        if(this.container == null){
+            this.wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(locator));
+            elementList =  this.driver.findElements(locator);
+        }else{
+            this.wait.until(ExpectedConditions.presenceOfNestedElementLocatedBy(this.container.webElement(), locator));
+            elementList =  this.container.webElement().findElements(locator);
+        }
+        for(int elementIndex=0; elementIndex < elementList.size(); elementIndex++){
+            this.elements.add(new YamlWebElement(this.testSession, this.pageObjectName, this.name+"["+elementIndex+"]", elementList.get(elementIndex)));
+        }
+    }
     public YamlWebElement get(Integer index){
         return this.elements.get(index); 
     }

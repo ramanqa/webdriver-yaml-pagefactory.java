@@ -22,7 +22,8 @@ public class YamlPage {
         Yaml yaml = new Yaml();
         try{
             this.pageUI = yaml.load(this.getClass().getClassLoader().getResourceAsStream(filePath));
-        }catch(Exception e){}
+        }catch(Exception e){
+        }
     }
 
     private Map<String, Object> elementUI(String elementName){
@@ -30,7 +31,11 @@ public class YamlPage {
     }
 
     private Boolean hasContainer() {
-        return ((Map<String, Object>) pageUI.get("elements")).containsKey("container");
+        try{
+            return ((Map<String, Object>) pageUI.get("elements")).containsKey("container");
+        }catch(NullPointerException ne){
+            return false;
+        }
     }
 
     public YamlWebElement element(String elementName){

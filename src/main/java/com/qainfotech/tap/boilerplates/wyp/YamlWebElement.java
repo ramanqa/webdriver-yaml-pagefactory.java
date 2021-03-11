@@ -202,4 +202,13 @@ public class YamlWebElement {
         return new YamlWebElement(this.testSession, this.pageObjectName, this.name+".child("+locator+")", locator, timeout);
     }
 
+    public YamlWebElements findElements(By locator){
+        Integer timeout = 1;
+        if(this.specs != null){
+            if(this.specs.containsKey("timeout")){
+                timeout = Integer.parseInt(this.specs.get("timeout").toString());
+            }
+        }
+        return new YamlWebElements(this, this.name+".child("+locator+")", locator, timeout);
+    }
 }
