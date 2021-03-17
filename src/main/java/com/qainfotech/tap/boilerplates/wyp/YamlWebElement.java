@@ -193,7 +193,7 @@ public class YamlWebElement {
     }
 
     public YamlWebElement findElement(By locator){
-        Integer timeout = 1;
+        Integer timeout = 0;
         if(this.specs != null){
             if(this.specs.containsKey("timeout")){
                 timeout = Integer.parseInt(this.specs.get("timeout").toString());
@@ -203,7 +203,7 @@ public class YamlWebElement {
     }
 
     public YamlWebElements findElements(By locator){
-        Integer timeout = 1;
+        Integer timeout = 0;
         if(this.specs != null){
             if(this.specs.containsKey("timeout")){
                 timeout = Integer.parseInt(this.specs.get("timeout").toString());
