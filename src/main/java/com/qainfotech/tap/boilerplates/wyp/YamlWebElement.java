@@ -131,6 +131,15 @@ public class YamlWebElement {
         this.webElement().click();
     }
 
+    public void clickWhenClickable(Integer timeout){
+    
+        new WebDriverWait(this.driver, timeout)
+          .until(ExpectedConditions.elementToBeClickable(this.webElement()));
+
+        this.click();
+
+    }
+
     public void submit(){
         this.webElement().submit();
     }
@@ -211,4 +220,5 @@ public class YamlWebElement {
         }
         return new YamlWebElements(this, this.name+".child("+locator+")", locator, timeout);
     }
+
 }
