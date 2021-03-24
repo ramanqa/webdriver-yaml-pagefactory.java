@@ -3,7 +3,7 @@
     <!-- This is the ReporterAppender -->
     <appender name="TestNG" class="com.qainfotech.tap.boilerplates.wyp.TestNGReporterAppender">
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %c{1.} - %msg%n</pattern>
         </encoder>
     </appender>
 

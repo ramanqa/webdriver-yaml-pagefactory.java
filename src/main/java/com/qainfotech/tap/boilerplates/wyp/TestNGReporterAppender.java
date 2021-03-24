@@ -19,7 +19,11 @@ public class TestNGReporterAppender extends AppenderBase<ILoggingEvent> {
             Reporter.log(logLine);
         }else{
             if(recordDebugLogs()){
-                String logLine = "[DEBUG] " + event.getLoggerName() + event.getMessage();
+                String logLine = "";
+                logLine = "--" + event.getLoggerName() + event.getMessage();
+                if(event.getLevel().toString().equals("WARN")){
+                    logLine = "-" + event.getLoggerName() + event.getMessage();
+                }
                 System.out.println(logLine);
                 Reporter.log(logLine);
             }
